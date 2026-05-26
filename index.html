@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>E2 Smart Audio System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Responsive Voice -->
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=free"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+:root{
+
+--bg1:#0f172a;
+--bg2:#111827;
+
+--glass:rgba(255,255,255,0.08);
+
+--border:rgba(255,255,255,0.1);
+
+--gold:#facc15;
+--gold2:#eab308;
+
+--blue:#38bdf8;
+--green:#22c55e;
+--orange:#f97316;
+--red:#ef4444;
+
+--text:#ffffff;
+--muted:#cbd5e1;
+
+--shadow:0 15px 40px rgba(0,0,0,0.4);
+
+}
+
+body{
+
+font-family:'Cairo',sans-serif;
+
+min-height:100vh;
+
+background:
+radial-gradient(circle at top right, rgba(250,204,21,0.12), transparent 25%),
+radial-gradient(circle at bottom left, rgba(56,189,248,0.15), transparent 25%),
+linear-gradient(135deg,var(--bg1),var(--bg2));
+
+color:var(--text);
+
+padding:30px;
+
+overflow-x:hidden;
+
+}
+
+body::before{
+
+content:"";
+
+position:fixed;
+inset:0;
+
+background-image:
+linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+
+background-size:35px 35px;
+
+pointer-events:none;
+
+}
+
+.container{
+
+max-width:1450px;
+
+margin:auto;
+
+display:grid;
+
+grid-template-columns:420px 1fr;
+
+gap:25px;
+
+}
+
+.left-panel{
+
+display:flex;
+flex-direction:column;
+gap:25px;
+
+}
+
+.card{
+
+background:var(--glass);
+
+backdrop-filter:blur(18px);
+
+border:1px solid var(--border);
+
+border-radius:30px;
+
+padding:28px;
+
+box-shadow:var(--shadow);
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.card::before{
+
+content:"";
+
+position:absolute;
+
+width:240px;
+height:240px;
+
+background:rgba(250,204,21,0.06);
+
+border-radius:50%;
+
+top:-120px;
+left:-120px;
+
+}
+
+.system-title{
+
+position:relative;
+z-index:2;
+
+}
+
+.system-title h1{
+
+font-size:34px;
+font-weight:800;
+
+line-height:1.2;
+
+}
+
+.system-title p{
+
+margin-top:10px;
+
+color:var(--muted);
+
+font-size:15px;
+
+line-height:1.8;
+
+}
+
+.system-title a{
+
+color:#38bdf8;
+text-decoration:none;
+font-weight:bold;
+
+}
+
+.clock-card{
+
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+
+min-height:250px;
+
+}
+
+.clock{
+
+font-size:60px;
+
+font-weight:800;
+
+color:var(--gold);
+
+letter-spacing:2px;
+
+}
+
+.date{
+
+margin-top:10px;
+
+font-size:24px;
+
+color:var(--muted);
+
+}
+
+.right-panel{
+
+display:flex;
+flex-direction:column;
+gap:25px;
+
+}
+
+.section-title{
+
+margin-bottom:24px;
+
+}
+
+.section-title h2{
+
+font-size:28px;
+font-weight:800;
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:18px;
+
+}
+
+.field{
+
+display:flex;
+flex-direction:column;
+gap:10px;
+
+}
+
+.field.full{
+grid-column:span 2;
+}
+
+label{
+
+font-size:15px;
+font-weight:700;
+
+color:#f8fafc;
+
+}
+
+input,
+select{
+
+width:100%;
+
+padding:17px;
+
+border-radius:18px;
+
+border:1px solid rgba(255,255,255,0.08);
+
+background:rgba(255,255,255,0.06);
+
+color:white;
+
+font-size:16px;
+
+outline:none;
+
+font-family:'Cairo',sans-serif;
+
+transition:0.25s;
+
+}
+
+input:focus,
+select:focus{
+
+border-color:var(--gold);
+
+box-shadow:0 0 0 4px rgba(250,204,21,0.15);
+
+}
+
+option{
+color:black;
+}
+
+.actions{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:18px;
+
+margin-top:25px;
+
+}
+
+.btn{
+
+border:none;
+
+cursor:pointer;
+
+border-radius:20px;
+
+padding:20px;
+
+font-size:17px;
+
+font-weight:800;
+
+font-family:'Cairo',sans-serif;
+
+transition:0.25s;
+
+}
+
+.btn:hover{
+
+transform:translateY(-2px);
+
+}
+
+.btn-full{
+
+background:linear-gradient(135deg,var(--gold),var(--gold2));
+
+color:#111827;
+
+grid-column:span 2;
+
+font-size:22px;
+
+box-shadow:0 10px 25px rgba(250,204,21,0.3);
+
+}
+
+.btn-office{
+
+background:rgba(56,189,248,0.18);
+
+color:#7dd3fc;
+
+border:1px solid rgba(56,189,248,0.2);
+
+}
+
+.btn-reason{
+
+background:rgba(249,115,22,0.15);
+
+color:#fdba74;
+
+border:1px solid rgba(249,115,22,0.2);
+
+}
+
+.btn-stop{
+
+background:rgba(239,68,68,0.15);
+
+color:#fca5a5;
+
+border:1px solid rgba(239,68,68,0.2);
+
+}
+
+.preview-box{
+
+margin-top:25px;
+
+padding:20px;
+
+border-radius:20px;
+
+background:rgba(255,255,255,0.05);
+
+border:1px dashed rgba(255,255,255,0.12);
+
+font-size:18px;
+
+line-height:1.8;
+
+color:#e2e8f0;
+
+min-height:90px;
+
+}
+
+.preview-title{
+
+margin-bottom:10px;
+
+font-weight:800;
+
+color:var(--gold);
+
+}
+
+@media(max-width:980px){
+
+.container{
+grid-template-columns:1fr;
+}
+
+.actions{
+grid-template-columns:1fr;
+}
+
+.btn-full{
+grid-column:span 1;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.field.full{
+grid-column:span 1;
+}
+
+.clock{
+font-size:48px;
+}
+
+.date{
+font-size:20px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="left-panel">
+
+<div class="card">
+
+<div class="system-title">
+
+<h1>
+Dreams Smart Audio System
+</h1>
+
+<p>
+نظام النداءات الذكي من تصميم وتطوير E2 للتفاصيل
+<a href="https://wa.me/201280738825?text=أهلاً%20E2،%20كنت%20حابب%20أستفسر%20عن%20تصميم%20نظام%20النداء">
+اضغط هنا
+</a>
+</p>
+
+</div>
+
+</div>
+
+<div class="card clock-card">
+
+<div class="clock" id="clock">
+00:00:00
+</div>
+
+<div class="date" id="date">
+الأحد ٢٤ / ٥ / ٢٠٢٦
+</div>
+
+</div>
+
+</div>
+
+<div class="right-panel">
+
+<div class="card">
+
+<div class="section-title">
+
+<h2>
+لوحة تنفيذ النداءات
+</h2>
+
+</div>
+
+<div class="grid">
+
+<div class="field full">
+
+<label>
+الاسم (شيف أو موظف)
+</label>
+
+<input
+type="text"
+id="targetName"
+placeholder="مثال: شيف زخاري">
+
+</div>
+
+<div class="field">
+
+<label>
+المكتب المستهدف
+</label>
+
+<select id="officeSelect">
+
+<option>مستر إيهاب إينال</option>
+<option>مستر حنا صلاح</option>
+<option>مستر جورج جريس</option>
+<option>مستر بيتر عِريان</option>
+<option>مستر حسن علي</option>
+<option>مستر كيرولِس هلال</option>
+<option>مستر سامح عايد</option>
+<option>مستر محمد رمضاان</option>
+<option>مستر حنا خلف</option>
+
+<option>
+قسم مخازن الأغذية - دريمز بيتش
+</option>
+
+<option>
+قسم مخازن المشروبات - دريمز فاكيشن
+</option>
+
+<option>
+قسم مخازن الجينرال - دريمز فاكيشن
+</option>
+
+<option>
+مكاتب الاستلام
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>
+الرسالة / السبب
+</label>
+
+<input
+type="text"
+id="reasonCall"
+placeholder="مثال: لتوقيع أذون الصرف">
+
+</div>
+
+</div>
+
+<div class="actions">
+
+<button
+class="btn btn-full"
+onclick="handleCall('full')">
+
+📣 تنفيذ النداء الكامل
+
+</button>
+
+<button
+class="btn btn-office"
+onclick="handleCall('office')">
+
+👤 نطق المكتب فقط
+
+</button>
+
+<button
+class="btn btn-reason"
+onclick="handleCall('reason')">
+
+📝 نطق الرسالة فقط
+
+</button>
+
+<button
+class="btn btn-stop"
+onclick="stopCall()">
+
+⛔ إيقاف النداء
+
+</button>
+
+</div>
+
+<div class="preview-box">
+
+<div class="preview-title">
+معاينة النداء:
+</div>
+
+<div id="previewText">
+لا يوجد نداء حالي
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const audioCtx =
+new(window.AudioContext || window.webkitAudioContext)();
+
+let currentAudio = null;
+
+/* تحديث الوقت */
+
+function updateClock(){
+
+const now = new Date();
+
+document.getElementById('clock').innerText =
+now.toLocaleTimeString('ar-EG');
+
+const weekday =
+now.toLocaleDateString(
+'ar-EG',
+{weekday:'long'}
+);
+
+const day =
+now.toLocaleDateString(
+'ar-EG',
+{day:'numeric'}
+);
+
+const month =
+now.toLocaleDateString(
+'ar-EG',
+{month:'numeric'}
+);
+
+const year =
+now.toLocaleDateString(
+'ar-EG',
+{year:'numeric'}
+);
+
+document.getElementById('date').innerText =
+`${weekday} ${day} / ${month} / ${year}`;
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+/* تشغيل MP3 أو fallback */
+
+function playCustomSound(type='start'){
+
+const file =
+type === 'start'
+? 'start.mp3'
+: 'end.mp3';
+
+const audio =
+new Audio(file);
+
+audio.volume = 1;
+
+audio.play()
+
+.catch(()=>{
+
+const osc =
+audioCtx.createOscillator();
+
+const gain =
+audioCtx.createGain();
+
+osc.connect(gain);
+
+gain.connect(audioCtx.destination);
+
+osc.type = 'triangle';
+
+osc.frequency.setValueAtTime(
+
+type === 'start'
+? 900
+: 500,
+
+audioCtx.currentTime
+
+);
+
+gain.gain.setValueAtTime(
+1,
+audioCtx.currentTime
+);
+
+gain.gain.exponentialRampToValueAtTime(
+0.001,
+audioCtx.currentTime + 0.8
+);
+
+osc.start();
+
+osc.stop(
+audioCtx.currentTime + 0.8
+);
+
+});
+
+}
+
+/* Google fallback */
+
+function googleSpeak(text){
+
+const url =
+'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q='
++
+encodeURIComponent(text);
+
+currentAudio = new Audio(url);
+
+currentAudio.volume = 1;
+
+currentAudio.play();
+
+}
+
+/* Browser fallback */
+
+function browserSpeak(text){
+
+const utterance =
+new SpeechSynthesisUtterance(text);
+
+utterance.lang = 'ar-SA';
+
+utterance.rate = 0.9;
+
+speechSynthesis.cancel();
+
+speechSynthesis.speak(utterance);
+
+}
+
+/* النظام الذكي */
+
+function speak(text){
+
+if(!text || text.trim()===''){
+return;
+}
+
+/* Responsive Voice */
+
+try{
+
+if(typeof responsiveVoice !== 'undefined'){
+
+responsiveVoice.cancel();
+
+responsiveVoice.speak(
+
+text,
+
+"Arabic Male",
+
+{
+
+rate:0.9,
+
+pitch:1,
+
+volume:1,
+
+onerror:function(){
+
+googleSpeak(text);
+
+}
+
+}
+
+);
+
+return;
+
+}
+
+}catch(e){
+
+console.log('ResponsiveVoice Failed');
+
+}
+
+/* Google */
+
+try{
+
+googleSpeak(text);
+
+return;
+
+}catch(e){
+
+console.log('Google TTS Failed');
+
+}
+
+/* Browser */
+
+try{
+
+browserSpeak(text);
+
+}catch(e){
+
+alert('فشل تشغيل الصوت');
+
+}
+
+}
+
+/* بناء الرسالة */
+
+function buildFullMessage(){
+
+const name =
+document.getElementById(
+'targetName'
+).value.trim();
+
+const office =
+document.getElementById(
+'officeSelect'
+).options[
+document.getElementById(
+'officeSelect'
+).selectedIndex
+].text;
+
+const reason =
+document.getElementById(
+'reasonCall'
+).value.trim();
+
+let text = '';
+
+if(name){
+
+text += `${name}. `;
+
+}
+
+text +=
+`برجاء التوجه إلى ${office}`;
+
+if(reason){
+
+text += ` . ${reason}`;
+
+}
+
+return text;
+
+}
+
+/* المعاينة */
+
+function updatePreview(text){
+
+document.getElementById(
+'previewText'
+).innerText = text;
+
+}
+
+/* تنفيذ النداء */
+
+async function handleCall(mode){
+
+await audioCtx.resume();
+
+/* صوت البداية */
+
+playCustomSound('start');
+
+let text = '';
+
+if(mode === 'full'){
+
+text = buildFullMessage();
+
+}
+
+else if(mode === 'office'){
+
+text =
+document.getElementById(
+'officeSelect'
+).options[
+document.getElementById(
+'officeSelect'
+).selectedIndex
+].text;
+
+}
+
+else if(mode === 'reason'){
+
+text =
+document.getElementById(
+'reasonCall'
+).value.trim()
+
+||
+
+'لا توجد رسالة';
+
+}
+
+updatePreview(text);
+
+/* تشغيل النطق */
+
+setTimeout(()=>{
+
+speak(text);
+
+/* صوت النهاية */
+
+setTimeout(()=>{
+
+playCustomSound('end');
+
+},5000);
+
+},1300);
+
+}
+
+/* إيقاف */
+
+function stopCall(){
+
+if(currentAudio){
+
+currentAudio.pause();
+
+currentAudio.currentTime = 0;
+
+}
+
+speechSynthesis.cancel();
+
+if(typeof responsiveVoice !== 'undefined'){
+
+responsiveVoice.cancel();
+
+}
+
+}
+
+/* اختصارات */
+
+window.addEventListener(
+'keydown',
+(e)=>{
+
+if(e.key === 'Enter'){
+
+handleCall('full');
+
+}
+
+if(e.key === 'Escape'){
+
+stopCall();
+
+}
+
+});
+
+</script>
+
+</body>
+
+</html>
