@@ -13,9 +13,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Responsive Voice -->
-<script src="https://code.responsivevoice.org/responsivevoice.js?key=free"></script>
-
 <style>
 
 *{
@@ -633,7 +630,7 @@ new(window.AudioContext || window.webkitAudioContext)();
 
 let currentAudio = null;
 
-/* تحديث الوقت */
+/* تحديث الساعة */
 
 function updateClock(){
 
@@ -675,23 +672,20 @@ setInterval(updateClock,1000);
 
 updateClock();
 
-/* تشغيل MP3 أو fallback */
+/* صوت البداية والنهاية */
 
 function playCustomSound(type='start'){
 
 const file =
 type === 'start'
-? 'start.mp3'
-: 'end.mp3';
+? './start.mp3'
+: './end.mp3';
 
-const audio =
-new Audio(file);
+const audio = new Audio(file);
 
 audio.volume = 1;
 
-audio.play()
-
-.catch(()=>{
+audio.play().catch(()=>{
 
 const osc =
 audioCtx.createOscillator();
@@ -705,15 +699,10 @@ gain.connect(audioCtx.destination);
 
 osc.type = 'triangle';
 
-osc.frequency.setValueAtTime(
-
+osc.frequency.value =
 type === 'start'
 ? 900
-: 500,
-
-audioCtx.currentTime
-
-);
+: 500;
 
 gain.gain.setValueAtTime(
 1,
@@ -735,41 +724,48 @@ audioCtx.currentTime + 0.8
 
 }
 
-/* Google fallback */
-
-function googleSpeak(text){
-
-const url =
-'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q='
-+
-encodeURIComponent(text);
-
-currentAudio = new Audio(url);
-
-currentAudio.volume = 1;
-
-currentAudio.play();
-
-}
-
-/* Browser fallback */
+/* fallback */
 
 function browserSpeak(text){
 
 const utterance =
 new SpeechSynthesisUtterance(text);
 
-utterance.lang = 'ar-SA';
+utterance.lang = 'ar-EG';
 
 utterance.rate = 0.9;
+
+utterance.pitch = 1;
+
+utterance.volume = 1;
+
+const voices =
+speechSynthesis.getVoices();
+
+const arabicVoice =
+voices.find(v =>
+v.lang.includes('ar')
+);
+
+if(arabicVoice){
+
+utterance.voice = arabicVoice;
+
+}
 
 speechSynthesis.cancel();
 
 speechSynthesis.speak(utterance);
 
+utterance.onend = ()=>{
+
+playCustomSound('end');
+
+};
+
 }
 
-/* النظام الذكي */
+/* النطق */
 
 function speak(text){
 
@@ -777,73 +773,9 @@ if(!text || text.trim()===''){
 return;
 }
 
-/* Responsive Voice */
-
-try{
-
-if(typeof responsiveVoice !== 'undefined'){
-
-responsiveVoice.cancel();
-
-responsiveVoice.speak(
-
-text,
-
-"Arabic Male",
-
-{
-
-rate:0.9,
-
-pitch:1,
-
-volume:1,
-
-onerror:function(){
-
-googleSpeak(text);
-
-}
-
-}
-
-);
-
-return;
-
-}
-
-}catch(e){
-
-console.log('ResponsiveVoice Failed');
-
-}
-
-/* Google */
-
-try{
-
-googleSpeak(text);
-
-return;
-
-}catch(e){
-
-console.log('Google TTS Failed');
-
-}
-
-/* Browser */
-
-try{
+stopCall();
 
 browserSpeak(text);
-
-}catch(e){
-
-alert('فشل تشغيل الصوت');
-
-}
 
 }
 
@@ -907,10 +839,6 @@ async function handleCall(mode){
 
 await audioCtx.resume();
 
-/* صوت البداية */
-
-playCustomSound('start');
-
 let text = '';
 
 if(mode === 'full'){
@@ -947,21 +875,13 @@ document.getElementById(
 
 updatePreview(text);
 
-/* تشغيل النطق */
+playCustomSound('start');
 
 setTimeout(()=>{
 
 speak(text);
 
-/* صوت النهاية */
-
-setTimeout(()=>{
-
-playCustomSound('end');
-
-},5000);
-
-},1300);
+},1200);
 
 }
 
@@ -978,12 +898,6 @@ currentAudio.currentTime = 0;
 }
 
 speechSynthesis.cancel();
-
-if(typeof responsiveVoice !== 'undefined'){
-
-responsiveVoice.cancel();
-
-}
 
 }
 
